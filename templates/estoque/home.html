@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8">
+        <title>Título da minha página</title>
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    </head>
+    <body>
+        <div class="caixa-branca">
+            <h1>Execução</h1>
+            <p>Escolha a ação desejada:</p>
+            <div class="menu">
+                <a href="{% url 'estoque' %}"><button>Estoque</button></a><br>
+                <a href="{% url 'produto' %}"><button>Produto</button></a><br>
+                <a href="{% url 'pedido' %}"><button>Pedido</button></a>
+            </div>
+        </div>
+    </body>
+</html>
+

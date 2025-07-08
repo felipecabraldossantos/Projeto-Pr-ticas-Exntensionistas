@@ -1,0 +1,28 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <title>Estoque</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+</head>
+<body>
+    <div class="caixa-branca">
+    <h1>Lista de Produtos</h1>
+
+    <form method="get">
+        <input type="text" name="q" placeholder="Buscar produto..." />
+        <button type="submit">Pesquisar</button>
+    </form>
+
+    <ul>
+        {% for produto in produtos %}
+            <li>{{ produto.descproduto }} - {{ produto.estoqueproduto }} {{ produto.unidadedemedida }}</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'home' %}">
+        <button>Voltar para o início</button>
+    </a>
+</div>
+</body>
+</html>

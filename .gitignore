@@ -1,0 +1,16 @@
+# Ignore o ambiente virtual
+venv/
+
+# Ignore arquivos compilados do Python
+__pycache__/
+*.pyc
+
+# Ignore banco de dados SQLite
+*.sqlite3
+
+# Arquivos de configuração do VS Code (opcional)
+.vscode/
+
+# Ignore arquivos de migração gerados (opcional)
+**/migrations/*.py
+!**/migrations/__init__.py
