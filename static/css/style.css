@@ -39,10 +39,12 @@ button:hover {
     transform: scale(1.03);
 }
 
-/* NOVOS estilos */
-
 .form-busca,
-.form-cadastro,
+.form-cadastro{
+    text-align: center;
+}
+
+
 .form-lista {
     text-align: left;
     margin-bottom: 20px;
