@@ -23,7 +23,7 @@ body {
 
 button {
     display: block;
-    margin: 1px auto; 
+    margin: 1px auto;
     padding: 10px 15px;
     background: linear-gradient(to right, #4683f5, #0056b3);
     border: none;
@@ -39,3 +39,37 @@ button:hover {
     transform: scale(1.03);
 }
 
+/* NOVOS estilos */
+
+.form-busca,
+.form-cadastro,
+.form-lista {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.form-cadastro input,
+.form-cadastro select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.lista-produtos {
+    list-style: none;
+    padding: 0;
+    text-align: left;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.lista-produtos li {
+    margin-bottom: 8px;
+}
+
+.erro {
+    color: red;
+    font-weight: bold;
+}

@@ -3,26 +3,60 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8" />
-    <title>Estoque</title>
+    <title>Produtos</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}" />
 </head>
 <body>
     <div class="caixa-branca">
-    <h1>Lista de Produtos</h1>
+        <h1>Pedidos</h1>
 
-    <form method="get">
-        <input type="text" name="q" placeholder="Buscar produto..." />
-        <button type="submit">Pesquisar</button>
-    </form>
+        <!-- Busca -->
+        <form method="get">
+            <input type="text" name="q" placeholder="Buscar produto..." value="{{ request.GET.q|default_if_none:'' }}" />
+            <button type="submit">Pesquisar</button>
+        </form>
 
-    <ul>
-        {% for produto in produtos %}
-            <li>{{ produto.descproduto }} - {{ produto.estoqueproduto }} {{ produto.unidadedemedida }}</li>
-        {% endfor %}
-    </ul>
-    <a href="{% url 'home' %}">
-        <button>Voltar para o início</button>
-    </a>
-</div>
+        <h2>Cadastrar Pedidos</h2>
+        {% if erro %}
+            <p style="color:red;">{{ erro }}</p>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <label>Descrição:</label>
+            <input type="text" name="descproduto" required />
+            <br>
+            <label>Estoque:</label>
+            <input type="number" name="estoqueproduto" step="0.01" min="0" required />
+            <br>
+            <label>Unidade de Medida:</label>
+            <select name="unidadedemedida" required>
+                {% for unidade in unidades %}
+                <option value="{{ unidade }}">{{ unidade }}</option>
+                {% endfor %}
+        </select>
+
+        <button type="submit">Cadastrar</button>
+        </form>
+
+        <br>
+
+        <a href="{% url 'home' %}">
+            <button>Voltar para o início</button>
+        </a>
+
+        <h2>Lista de Pedidos</h2>
+            <ul>
+                {% for produto in produtos %}
+                    <li>
+                        {{ produto.descproduto }} - {{ produto.estoqueproduto }} {{ produto.unidadedemedida }}
+                        <a href="{% url 'editar_produto' produto.idproduto %}">
+                            <button>Editar</button>
+                        </a>
+                    </li>
+                {% empty %}
+                    <li>Nenhum produto encontrado.</li>
+                {% endfor %}
+            </ul>
+    </div>
 </body>
 </html>
