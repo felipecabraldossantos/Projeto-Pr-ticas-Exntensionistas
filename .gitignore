@@ -14,3 +14,5 @@ __pycache__/
 # Ignore arquivos de migração gerados (opcional)
 **/migrations/*.py
 !**/migrations/__init__.py
+
+.env
