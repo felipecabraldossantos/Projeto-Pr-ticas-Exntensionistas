@@ -1,32 +1,64 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Editar Produto</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body>
-    <div class="caixa-branca">
-        <h1>Editar Produto</h1>
+    <head>
+        <meta charset="UTF-8">
+        <title>Editar Pedido</title>
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    </head>
+    <body>
+        <div class="caixa-branca">
+            <h1>Editar Pedido</h1>
+            <form method="post">
+                {% csrf_token %}
+                <label>Nome:</label>
+                <input type="text" name="nomepedido" value="{{ pedido.nomepedido }}" required><br>
 
-        <form method="post">
-            {% csrf_token %}
-            <label>Descrição:</label>
-            <input type="text" name="descproduto" value="{{ produto.descproduto }}" required>
-                <br>
-            <label>Unidade de Medida:</label>
-            <select name="unidadedemedida" required>
-                {% for unidade in unidades %}
-                    <option value="{{ unidade }}" {% if unidade == produto.unidadedemedida %}selected{% endif %}>
-                        {{ unidade }}
-                    </option>
-                {% endfor %}
-            </select>
+                <label>Descrição:</label>
+                <input type="text" name="descpedido" value="{{ pedido.descpedido }}"><br>
 
-            <button type="submit">Salvar</button>
-            <a href="{% url 'produto' %}"><button type="button">Cancelar</button></a>
-        </form>
-    </div>
-</body>
+                <label>Quantidade:</label>
+                <input type="number" name="qtdpedido" step="0.01" value="{{ pedido.qtdpedido }}" required><br>
+
+                <label>Status:</label>
+                <select name="statuspedido" required>
+                    <option value="1" {% if pedido.statuspedido == 1 %}selected{% endif %}>Aberto</option>
+                    <option value="2" {% if pedido.statuspedido == 2 %}selected{% endif %}>Finalizado</option>
+                    <option value="3" {% if pedido.statuspedido == 3 %}selected{% endif %}>Cancelado</option>
+                </select><br>
+
+                <label>Data Início:</label>
+                <input type="date" name="datainicio" value="{{ pedido.datainicio }}" required><br>
+
+                <label>Data Fim:</label>
+                <input type="date" name="datafim" value="{{ pedido.datafim|default_if_none:'' }}"><br>
+
+                <label>Produto:</label>
+                <select name="produto" required>
+                    {% for produto in produtos %}
+                        <option value="{{ produto.idproduto }}" {% if produto.idproduto == pedido.produto.idproduto %}selected{% endif %}>
+                            {{ produto.descproduto }}
+                        </option>
+                    {% endfor %}
+                </select><br>
+
+                <label>Tipo de Pedido:</label>
+                <select name="tipopedido" required>
+                    <option value="1" {% if pedido.tipopedido == 1 %}selected{% endif %}>Compra de insumos</option>
+                    <option value="2" {% if pedido.tipopedido == 2 %}selected{% endif %}>Produção de itens</option>
+                </select><br>
+
+                <hr>
+                <h3>Informações do Pedido</h3>
+                <p><strong>Produto:</strong> {{ produto.descproduto }}</p>
+                <p><strong>Estoque atual:</strong> {{ produto.estoqueproduto }} {{ produto.unidadedemedida }}</p>
+                <p><strong>Unidade de medida:</strong> {{ produto.unidadedemedida }}</p>
+                <p><strong>Data de início:</strong> {{ pedido.datainicio|date:"d/m/Y" }}</p>
+                <p><strong>Data de fim:</strong> {{ pedido.datafim|date:"d/m/Y" }}</p>
+
+                <button type="submit">Salvar</button>
+                <a href="{% url 'pedido' %}"><button type="button">Cancelar</button></a>
+            </form>
+        </div>
+    </body>
 </html>

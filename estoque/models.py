@@ -27,11 +27,11 @@ class Pedido(models.Model):
     statuspedido = models.IntegerField(choices=STATUS_CHOICES)
     datainicio = models.DateField()
     datafim = models.DateField(blank=True, null=True)
-    produto = models.ForeignKey(Produto, db_column='TabelaEstoqueidproduto', on_delete=models.CASCADE)
+    produto = models.ForeignKey(Produto, db_column='tabelaestoqueidproduto', on_delete=models.CASCADE)
     tipopedido = models.IntegerField(choices=TIPO_CHOICES)
 
     class Meta:
-        db_table = 'TabelaPedido'
+        db_table = 'tabelapedido'
 
     def __str__(self):
         return self.nomepedido
