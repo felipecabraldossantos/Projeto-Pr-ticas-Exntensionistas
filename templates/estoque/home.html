@@ -10,15 +10,16 @@
         <div class="caixa-branca">
             <h1>Execução</h1>
             <p>Escolha a ação desejada:</p>
-            <div class="menu">
-                <a href="{% url 'estoque' %}"><button>Estoque</button></a>
-                <br>
-                <a href="{% url 'produto' %}"><button>Produto</button></a>
-                <br>
-                <a href="{% url 'pedido' %}"><button>Pedido</button></a>
-                <br>
-                <a href="{% url 'contato' %}"><button>Suporte</button></a>
-            </div>
+            {% if user.is_authenticated %}
+                <div class="menu">
+                    <a href="{% url 'estoque' %}"><button>Estoque</button></a>
+                    <a href="{% url 'produto' %}"><button>Produto</button></a>
+                    <a href="{% url 'pedido' %}"><button>Pedido</button></a>
+                    <a href="{% url 'contato' %}"><button>Suporte</button></a>
+                </div>
+            {% else %}
+                <p>Você precisa <a href="{% url 'login' %}">fazer login</a> para acessar o sistema.</p>
+            {% endif %}
         </div>
     </body>
 </html>
