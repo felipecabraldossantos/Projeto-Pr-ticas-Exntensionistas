@@ -1,4 +1,5 @@
 from django.db import models
+from django import forms
 
 class Produto(models.Model):
     idproduto = models.AutoField(primary_key=True)
@@ -35,3 +36,8 @@ class Pedido(models.Model):
 
     def __str__(self):
         return self.nomepedido
+
+class ContatoForm(forms.Form):
+    nome = forms.CharField(max_length=100)
+    email = forms.EmailField()
+    mensagem = forms.CharField(widget=forms.Textarea)

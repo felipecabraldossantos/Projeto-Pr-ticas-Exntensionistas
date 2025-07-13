@@ -1,12 +1,17 @@
 from django.shortcuts import render, redirect
-from .models import Produto, Pedido
-from django.shortcuts import get_object_or_404
+from .models import Produto, Pedido, ContatoForm
+from django.shortcuts import get_object_or_404,render, redirect
 from django.utils import timezone
+from django.conf import settings
+from django.core.mail import send_mail
+from django.contrib.auth.decorators import login_required
 
+@login_required
 def home(request):
     produtos = Produto.objects.all()
     return render(request, 'estoque/home.html', {'produtos': produtos})
 
+@login_required
 def estoque_view(request):
     query = request.GET.get('q')
     if query:
@@ -15,8 +20,9 @@ def estoque_view(request):
         produtos = Produto.objects.all()
     return render(request, 'estoque/estoque.html', {'produtos': produtos})
 
+@login_required
 def produto_view(request):
-    # Pegando unidades distintas já existentes no banco
+
     unidades = Produto.objects.values_list('unidadedemedida', flat=True).distinct()
 
     if request.method == 'POST':
@@ -35,8 +41,9 @@ def produto_view(request):
     produtos = Produto.objects.all()
     return render(request, 'estoque/produto.html', {'produtos': produtos, 'unidades': unidades})
 
+@login_required
 def editar_produto_view(request, produto_id):
-    produto = get_object_or_404produto = get_object_or_404(Produto, idproduto=produto_id)
+    produto = produto = get_object_or_404(Produto, idproduto=produto_id)
     unidades = Produto.objects.values_list('unidadedemedida', flat=True).distinct()
 
     if request.method == 'POST':
@@ -50,24 +57,26 @@ def editar_produto_view(request, produto_id):
         'unidades': unidades
     })
 
+@login_required
 def editar_produto_redirect_view(request):
     produto_id = request.GET.get("produto_id")
     if produto_id:
         return redirect('editar_produto', produto_id=produto_id)
     return redirect('produto')
 
+@login_required
 def pedido_view(request):
     produtos = Produto.objects.all()
     query = request.GET.get('q')
     status_filter = request.GET.get('status')
 
-    # Selecionar pedido
+    
     if request.method == 'POST' and 'selecionar_pedido' in request.POST:
         pedido_id = request.POST.get('pedido_selecionado')
         if pedido_id:
             return redirect('editar_pedido', pedido_id=pedido_id)
 
-    # Cadastrar novo pedido
+    
     if request.method == 'POST' and 'cadastrar_pedido' in request.POST:
         nome = request.POST.get('nomepedido')
         desc = request.POST.get('descpedido')
@@ -93,7 +102,7 @@ def pedido_view(request):
 
     pedidos = Pedido.objects.select_related('produto')
 
-    # Filtros aplicados
+    
     if query:
         pedidos = pedidos.filter(nomepedido__icontains=query)
     if status_filter == 'finalizado':
@@ -108,6 +117,7 @@ def pedido_view(request):
         'status_filter': status_filter,
     })
 
+@login_required
 def editar_pedido_view(request, pedido_id):
     pedido = get_object_or_404(Pedido, idpedido=pedido_id)
     produtos = Produto.objects.all()
@@ -127,5 +137,34 @@ def editar_pedido_view(request, pedido_id):
     return render(request, 'estoque/editar_pedido.html', {
         'pedido': pedido,
         'produtos': produtos,
-        'produto': pedido.produto,  # ✅ Certifique-se da vírgula aqui
+        'produto': pedido.produto,
     })
+
+@login_required
+def contato(request):
+    if request.method == 'POST':
+        form = ContatoForm(request.POST)
+        if form.is_valid():
+            nome = form.cleaned_data['nome']
+            email = form.cleaned_data['email']
+            mensagem = form.cleaned_data['mensagem']
+            
+            assunto = f'Contato de {nome}'
+            corpo = f'Email: {email}\n\nMensagem:\n{mensagem}'
+
+            send_mail(
+                assunto,
+                corpo,
+                settings.EMAIL_HOST_USER,
+                [settings.EMAIL_HOST_USER, settings.EMAIL_SUPORTE],
+                fail_silently=False,
+            )
+            return redirect('contato_enviado')  # criar outra tela
+    else:
+        form = ContatoForm()
+    
+    return render(request, 'estoque/contato.html', {'form': form})
+
+@login_required
+def contato_enviado(request):
+    return render(request, 'estoque/contato_enviado.html')

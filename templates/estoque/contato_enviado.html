@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <title>Mensagem enviada</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="caixa-branca">
+        <h2>Mensagem enviada com sucesso!</h2>
+        <p>Agradecemos o seu contato. Em breve responderemos.</p>
+        <a href="{% url 'home' %}" class="button">Voltar para o início</a>
+    </div>
+</body>
+</html>
