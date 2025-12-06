@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+import dj_database_url
+
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -28,7 +30,7 @@ SECRET_KEY = 'django-insecure-pj2_%=-cll)dai)@_)08@pl@xj)i$_3pv1q2h8th01tv$f=0d$
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*'] #ajustar depois, Bad Request(400) // permite qualquer um acessar
 
 
 # Application definition
@@ -41,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'estoque',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -126,16 +129,23 @@ LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/login/'
 
 #configurações do banco de dados
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
-        'PORT': os.getenv('DB_PORT', '5432'),
+DATABASE_URL = os.getenv("DATABASE_URL")
+if DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.parse(DATABASE_URL)
     }
-}
+else:
+    # ambiente local
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('DB_NAME'),
+            'USER': os.getenv('DB_USER'),
+            'PASSWORD': os.getenv('DB_PASSWORD'),
+            'HOST': os.getenv('DB_HOST'),
+            'PORT': os.getenv('DB_PORT'),
+        }
+    }
 
 #Configurações do email
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -147,15 +157,3 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 EMAIL_SUPORTE = os.getenv('EMAIL_SUPORTE')
 
-#DB_NAME=dw_atividade
-#DB_USER=postgres
-#DB_PASSWORD=
-#DB_HOST=localhost
-#DB_PORT=5432
-
-#EMAIL_HOST=smtp.gmail.com
-#EMAIL_USE_TLS=True
-#EMAIL_PORT=587
-#EMAIL_HOST_USER=felipe46285@gmail.com
-#EMAIL_SUPORTE=felipe.cabral@unoesc.edu.br
-#EMAIL_HOST_PASSWORD=

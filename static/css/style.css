@@ -1,68 +1,112 @@
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-image: url('../img/background.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-attachment: fixed;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
+    background: linear-gradient(to bottom, #00f5e1, #0083d8, #003a8c);
     margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.card-home {
+    background: white;
+    width: 90%;
+    max-width: 450px;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
+}
+
+.home-buttons .btn {
+    width: 100%;
+    margin-top: 10px;
+    font-size: 18px;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.home-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.pagina {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .caixa-branca {
     background-color: white;
-    width: 400px;
     padding: 40px 30px;
     border-radius: 15px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+
+    width: 400px;
+    max-width: 90%; /* Responsivo */
     text-align: center;
 }
 
-button {
+.caixa-branca h1 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 32px;
+    color: #222;
+}
+
+.menu-botoes {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.btn-menu {
     display: block;
-    margin: 1px auto;
-    padding: 10px 15px;
-    background: linear-gradient(to right, #4683f5, #0056b3);
-    border: none;
+    padding: 12px;
     border-radius: 8px;
+
+    background: linear-gradient(to right, #4683f5, #0056b3);
     color: white;
     font-size: 16px;
-    cursor: pointer;
-    transition: background 0.3s ease, transform 0.2s;
+    font-weight: 600;
+    text-decoration: none;
+
+    transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
-button:hover {
-    background: linear-gradient(to right, #5a96f6, #1e62c9);
+.btn-menu:hover {
     transform: scale(1.03);
-}
-
-.form-busca,
-.form-cadastro{
-    text-align: center;
-}
-
-
-.form-lista {
-    text-align: left;
-    margin-bottom: 20px;
+    opacity: 0.9;
 }
 
 .form-cadastro input,
 .form-cadastro select {
     width: 100%;
     padding: 8px;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+
     border-radius: 6px;
     border: 1px solid #ccc;
+}
+
+.form-busca,
+.form-cadastro {
+    text-align: center;
+}
+
+.form-lista {
+    text-align: left;
+    margin-bottom: 20px;
 }
 
 .lista-produtos {
     list-style: none;
     padding: 0;
-    text-align: left;
     max-height: 200px;
     overflow-y: auto;
 }
@@ -74,4 +118,20 @@ button:hover {
 .erro {
     color: red;
     font-weight: bold;
+    margin-top: 10px;
+}
+
+@media (max-width: 480px) {
+    .caixa-branca {
+        padding: 30px 20px;
+    }
+
+    .btn-menu {
+        font-size: 15px;
+        padding: 10px;
+    }
+
+    .caixa-branca h1 {
+        font-size: 26px;
+    }
 }

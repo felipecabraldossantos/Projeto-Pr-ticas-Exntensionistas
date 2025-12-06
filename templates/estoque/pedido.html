@@ -1,82 +1,82 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="pt-br">
-    <head>
-        <meta charset="UTF-8" />
-        <title>Pedidos</title>
-        <link rel="stylesheet" href="{% static 'css/style.css' %}" />
-    </head>
-    <body>
-        <div class="caixa-branca">
-            <h1>Cadastrar Pedido</h1>
-            <form method="post">
-                {% csrf_token %}
-                <input type="hidden" name="cadastrar_pedido" value="1">
-                <label>Nome:</label>
-                <input type="text" name="nomepedido" required><br>
+{% extends 'estoque/base.html' %}
+{% block title %}Estoque{% endblock %}
 
-                <label>Descrição:</label>
-                <input type="text" name="descpedido"><br>
+{% block content %}
+<div class="caixa-branca">
+    <h1>Cadastrar Pedido</h1>
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="cadastrar_pedido" value="1">
+        <label>Nome:</label>
+        <input type="text" name="nomepedido" required><br>
 
-                <label>Quantidade:</label>
-                <input type="number" name="qtdpedido" step="0.01" required><br>
+        <label>Descrição:</label>
+        <input type="text" name="descpedido"><br>
 
-                <label>Status:</label>
-                <select name="statuspedido" required>
-                    <option value="1">Aberto</option>
-                    <option value="2">Finalizado</option>
-                    <option value="3">Cancelado</option>
-                </select><br>
+        <label>Quantidade:</label>
+        <input type="number" name="qtdpedido" step="0.01" required><br>
 
-                <label>Data Início:</label>
-                <input type="date" name="datainicio" required><br>
+        <label>Status:</label>
+        <select name="statuspedido" required>
+            <option value="1">Aberto</option>
+            <option value="2">Finalizado</option>
+            <option value="3">Cancelado</option>
+        </select><br>
 
-                <label>Data Fim:</label>
-                <input type="date" name="datafim"><br>
+        <label>Data Início:</label>
+        <input type="date" name="datainicio" required><br>
 
-                <label>Produto:</label>
-                <select name="produto" required>
-                    {% for produto in produtos %}
-                        <option value="{{ produto.idproduto }}">{{ produto.descproduto }}</option>
-                    {% endfor %}
-                </select><br>
+        <label>Data Fim:</label>
+        <input type="date" name="datafim"><br>
 
-                <label>Tipo de Pedido:</label>
-                <select name="tipopedido" required>
-                    <option value="1">Compra de insumos</option>
-                    <option value="2">Produção de itens</option>
-                </select><br>
+        <label>Produto:</label>
+        <select name="produto" required>
+            {% for produto in produtos %}
+                <option value="{{ produto.idproduto }}">{{ produto.descproduto }}</option>
+            {% endfor %}
+        </select><br>
 
-                <button type="submit">Cadastrar</button>
-            </form>
-            <h2>Lista de Pedidos</h2>
+        <label>Tipo de Pedido:</label>
+        <select name="tipopedido" required>
+            <option value="1">Compra de insumos</option>
+            <option value="2">Produção de itens</option>
+        </select><br>
 
-            <form method="get" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
-                <input type="text" name="q" placeholder="Buscar pedido..." value="{{ query|default_if_none:'' }}" />
-                <select name="status">
-                    <option value="">Todos</option>
-                    <option value="finalizado" {% if status_filter == "finalizado" %}selected{% endif %}>Finalizados</option>
-                    <option value="nao_finalizado" {% if status_filter == "nao_finalizado" %}selected{% endif %}>Não finalizados</option>
-                </select>
-                <button type="submit">Filtrar</button>
-            </form>
+        <button type="submit">Cadastrar</button>
+    </form>
+    <h2>Lista de Pedidos</h2>
 
-            <form method="post">
-                {% csrf_token %}
-                <input type="hidden" name="selecionar_pedido" value="1">
-                <ul>
-                    {% for pedido in pedidos %}
-                        <li>
-                            <input type="radio" name="pedido_selecionado" value="{{ pedido.idpedido }}">
-                            {{ pedido.nomepedido }} - {{ pedido.get_statuspedido_display }} - {{ pedido.produto.descproduto }}
-                        </li>
-                    {% empty %}
-                        <li>Nenhum pedido encontrado.</li>
-                    {% endfor %}
-                </ul>
-                <button type="submit">Editar pedido selecionado</button>
-            </form>
-            <a href="{% url 'home' %}"><button>Voltar para o início</button></a>
+    <form method="get" style="margin-bottom: 10px;">
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="text" name="q" placeholder="Buscar pedido..." value="{{ query|default_if_none:'' }}" />
+            <select name="status">
+                <option value="">Todos</option>
+                <option value="finalizado" {% if status_filter == "finalizado" %}selected{% endif %}>Finalizados</option>
+                <option value="nao_finalizado" {% if status_filter == "nao_finalizado" %}selected{% endif %}>Não finalizados</option>
+            </select>
         </div>
-    </body>
-</html>
+
+        <div style="margin-top: 8px;">
+            <button type="submit">Filtrar</button>
+        </div>
+    </form>
+
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="selecionar_pedido" value="1">
+        <ul>
+            {% for pedido in pedidos %}
+                <li>
+                    <input type="radio" name="pedido_selecionado" value="{{ pedido.idpedido }}">
+                    {{ pedido.nomepedido }} - {{ pedido.get_statuspedido_display }} - {{ pedido.produto.descproduto }}
+                </li>
+            {% empty %}
+                <li>Nenhum pedido encontrado.</li>
+            {% endfor %}
+        </ul>
+        <button type="submit">Editar pedido selecionado</button>
+    </form>
+    <a href="{% url 'home' %}"><button>Voltar para o início</button></a>
+</div>
+
+{% endblock %}

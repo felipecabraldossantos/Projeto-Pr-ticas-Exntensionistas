@@ -1,12 +1,7 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Editar Produto</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body>
+{% extends 'estoque/base.html' %}
+{% block title %}Estoque{% endblock %}
+
+{% block content %}
     <div class="caixa-branca">
         <h1>Editar Produto</h1>
 
@@ -28,5 +23,5 @@
             <a href="{% url 'produto' %}"><button type="button">Cancelar</button></a>
         </form>
     </div>
-</body>
-</html>
+
+{% endblock %}

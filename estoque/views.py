@@ -5,6 +5,18 @@ from django.utils import timezone
 from django.conf import settings
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .serializers import ProdutoSerializer
+from django.http import JsonResponse
+import requests
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+import json
+import os
+
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+TELEGRAM_URL = os.getenv("TELEGRAM_URL")
 
 @login_required
 def home(request):
@@ -69,13 +81,11 @@ def pedido_view(request):
     produtos = Produto.objects.all()
     query = request.GET.get('q')
     status_filter = request.GET.get('status')
-
     
     if request.method == 'POST' and 'selecionar_pedido' in request.POST:
         pedido_id = request.POST.get('pedido_selecionado')
         if pedido_id:
             return redirect('editar_pedido', pedido_id=pedido_id)
-
     
     if request.method == 'POST' and 'cadastrar_pedido' in request.POST:
         nome = request.POST.get('nomepedido')
@@ -101,7 +111,6 @@ def pedido_view(request):
             return redirect('pedido')
 
     pedidos = Pedido.objects.select_related('produto')
-
     
     if query:
         pedidos = pedidos.filter(nomepedido__icontains=query)
@@ -168,3 +177,97 @@ def contato(request):
 @login_required
 def contato_enviado(request):
     return render(request, 'estoque/contato_enviado.html')
+
+@api_view(['GET'])
+def api_produtos(request):
+    produtos = Produto.objects.all()
+    serializer = ProdutoSerializer(produtos, many=True)
+    return Response(serializer.data)
+
+def api_ruptura(request):
+    LIMITE = 100
+
+    produtos = Produto.objects.filter(estoqueproduto__lt=LIMITE)
+
+    data = [
+        {
+            "idproduto": p.idproduto,
+            "descricao": p.descproduto,
+            "estoque": float(p.estoqueproduto),
+            "unidade": p.unidadedemedida,
+        }
+        for p in produtos
+    ]
+
+    return JsonResponse(data, safe=False)
+
+def enviar_mensagem(chat_id, texto):
+    requests.post(
+        TELEGRAM_URL,
+        json={"chat_id": chat_id, "text": texto, "parse_mode": "Markdown"}
+    )
+
+def comando_start(chat_id):
+    enviar_mensagem(chat_id, "Olá! 👋\n\nUse:\n/buscar nome → procurar produto\n/estoque id → ver estoque")
+
+
+def comando_estoque(chat_id, pid):
+    try:
+        p = Produto.objects.get(idproduto=pid)
+        msg = (
+            f"*Produto:* {p.descproduto}\n"
+            f"*Estoque:* {p.estoqueproduto} {p.unidadedemedida}"
+        )
+        enviar_mensagem(chat_id, msg)
+    except Produto.DoesNotExist:
+        enviar_mensagem(chat_id, "Produto não encontrado.")
+
+
+def comando_buscar(chat_id, termo):
+    produtos = Produto.objects.filter(descproduto__icontains=termo)
+
+    if not produtos.exists():
+        enviar_mensagem(chat_id, "Nenhum produto encontrado.")
+        return
+
+    msg = "🔎 *Resultados:*\n\n"
+    for p in produtos:
+        msg += f"`{p.idproduto}` – {p.descproduto} ({p.estoqueproduto} {p.unidadedemedida})\n"
+
+    msg += "\nUse /estoque ID para ver mais detalhes."
+    enviar_mensagem(chat_id, msg)
+
+@csrf_exempt
+def telegram_webhook(request):
+    if request.method != "POST":
+        return JsonResponse({"status": "ok"})
+
+    data = json.loads(request.body)
+
+    if "message" not in data:
+        return JsonResponse({"ok": True})
+
+    chat_id = data["message"]["chat"]["id"]
+    texto = data["message"].get("text", "").lower()
+
+    if texto.startswith("/start"):
+        comando_start(chat_id)
+
+    elif texto.startswith("/estoque"):
+        partes = texto.split()
+        if len(partes) == 2 and partes[1].isdigit():
+            comando_estoque(chat_id, int(partes[1]))
+        else:
+            enviar_mensagem(chat_id, "Use: /estoque ID")
+
+    elif texto.startswith("/buscar"):
+        termo = texto.replace("/buscar", "").strip()
+        if len(termo) < 2:
+            enviar_mensagem(chat_id, "Digite pelo menos 2 letras.")
+        else:
+            comando_buscar(chat_id, termo)
+
+    else:
+        enviar_mensagem(chat_id, "Não entendi. Use /start para ajuda.")
+
+    return JsonResponse({"ok": True})

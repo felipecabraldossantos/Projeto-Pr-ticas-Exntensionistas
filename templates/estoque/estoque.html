@@ -1,28 +1,23 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8" />
-    <title>Estoque</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
-</head>
-<body>
-    <div class="caixa-branca">
+{% extends 'estoque/base.html' %}
+{% block title %}Estoque{% endblock %}
+
+{% block content %}
+<div class="card-home">
     <h1>Lista de Produtos</h1>
 
-    <form method="get">
-        <input type="text" name="q" placeholder="Buscar produto..." />
-        <button type="submit">Pesquisar</button>
+    <form method="get" class="mb-3">
+        <input type="text" name="q" class="form-control mb-2" placeholder="Buscar produto..." />
+        <button type="submit" class="btn btn-primary w-100">Pesquisar</button>
     </form>
 
-    <ul>
+    <ul class="list-group mb-3">
         {% for produto in produtos %}
-            <li>{{ produto.descproduto }} - {{ produto.estoqueproduto }} {{ produto.unidadedemedida }}</li>
+            <li class="list-group-item">
+                {{ produto.descproduto }} — {{ produto.estoqueproduto }} {{ produto.unidadedemedida }}
+            </li>
         {% endfor %}
     </ul>
-    <a href="{% url 'home' %}">
-        <button>Voltar para o início</button>
-    </a>
+
+    <a href="{% url 'home' %}" class="btn btn-secondary w-100">Voltar para o início</a>
 </div>
-</body>
-</html>
+{% endblock %}

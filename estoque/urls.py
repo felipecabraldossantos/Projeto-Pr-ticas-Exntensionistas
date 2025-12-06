@@ -1,6 +1,5 @@
 from django.contrib.auth import views as auth_views
 from django.urls import path
-from django.urls import path
 from . import views
 
 urlpatterns = [
@@ -15,4 +14,7 @@ urlpatterns = [
     path('pedido/editar/<int:pedido_id>/', views.editar_pedido_view, name='editar_pedido'),
     path('contato/', views.contato, name='contato'),
     path('contato/enviado/', views.contato_enviado, name='contato_enviado'),
+    path('api/produtos/', views.api_produtos, name='api_produtos'),
+    path("api/ruptura/", views.api_ruptura, name="api_ruptura"),
+    path("telegram/webhook/", views.telegram_webhook, name="telegram_webhook"),
 ]

@@ -1,20 +1,15 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-{% load static %}
-<head>
-    <meta charset="UTF-8">
-    <title>Formulário de Contato</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body>
-    <div class="caixa-branca">
-        <h2>Formulário de Contato</h2>
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Enviar</button>
-        </form>
-        <a href="{% url 'home' %}" class="button">Voltar para o início</a>
-    </div>
-</body>
-</html>
+{% extends 'estoque/base.html' %}
+{% block title %}Estoque{% endblock %}
+
+{% block content %}
+<div class="caixa-branca">
+    <h2>Formulário de Contato</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Enviar</button>
+    </form>
+    <a href="{% url 'home' %}" class="button">Voltar para o início</a>
+</div>
+
+{% endblock %}
