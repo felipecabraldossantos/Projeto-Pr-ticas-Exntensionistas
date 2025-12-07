@@ -1,6 +1,7 @@
 from django.contrib.auth import views as auth_views
 from django.urls import path
 from . import views
+from estoque.views import telegram_webhook
 
 urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='estoque/login.html'), name='login'),
@@ -17,4 +18,5 @@ urlpatterns = [
     path('api/produtos/', views.api_produtos, name='api_produtos'),
     path("api/ruptura/", views.api_ruptura, name="api_ruptura"),
     path("telegram/webhook/", views.telegram_webhook, name="telegram_webhook"),
+    path('bot/', telegram_webhook, name='telegram_webhook'),
 ]
