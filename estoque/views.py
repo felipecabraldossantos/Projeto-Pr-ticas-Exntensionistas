@@ -172,6 +172,9 @@ def contato(request):
 def contato_enviado(request):
     return render(request, 'estoque/contato_enviado.html')
 
+def api_ruptura(request): #corrigir isso quando der tempo
+    return JsonResponse({"status": "ok"})
+
 def api_produtos(request):
     produtos = Produto.objects.all()
     data = list(produtos.values())
