@@ -1,4 +1,3 @@
-from django.shortcuts import render, redirect
 from .models import Produto, Pedido, ContatoForm
 from django.shortcuts import get_object_or_404,render, redirect
 from django.conf import settings
@@ -7,7 +6,6 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 import requests
 from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
 import json
 import os
 
@@ -174,7 +172,11 @@ def contato(request):
 def contato_enviado(request):
     return render(request, 'estoque/contato_enviado.html')
 
-# 🔹 Enviar mensagem via bot
+def api_produtos(request):
+    produtos = Produto.objects.all()
+    data = list(produtos.values())
+    return JsonResponse(data, safe=False)
+
 def enviar_mensagem(chat_id, texto):
     requests.post(
         TELEGRAM_URL,
@@ -185,8 +187,6 @@ def enviar_mensagem(chat_id, texto):
         }
     )
 
-
-# 🔹 /start
 def comando_start(chat_id):
     msg = (
         "Olá! 👋\n\n"
@@ -197,7 +197,6 @@ def comando_start(chat_id):
     enviar_mensagem(chat_id, msg)
 
 
-# 🔹 /estoque <id>
 def comando_estoque(chat_id, pid):
     try:
         p = Produto.objects.get(idproduto=pid)
@@ -210,7 +209,6 @@ def comando_estoque(chat_id, pid):
         enviar_mensagem(chat_id, "Produto não encontrado.")
 
 
-# 🔹 /buscar nome
 def comando_buscar(chat_id, termo):
     produtos = Produto.objects.filter(descproduto__icontains=termo)
 
@@ -226,7 +224,6 @@ def comando_buscar(chat_id, termo):
     enviar_mensagem(chat_id, msg)
 
 
-# 🔹 Webhook do Telegram
 @csrf_exempt
 def telegram_webhook(request):
     if request.method != "POST":
