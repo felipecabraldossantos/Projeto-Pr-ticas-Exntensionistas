@@ -1,13 +1,9 @@
 from django.shortcuts import render, redirect
 from .models import Produto, Pedido, ContatoForm
 from django.shortcuts import get_object_or_404,render, redirect
-from django.utils import timezone
 from django.conf import settings
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from .serializers import ProdutoSerializer
 from django.http import JsonResponse
 import requests
 from django.views.decorators.csrf import csrf_exempt
@@ -178,39 +174,30 @@ def contato(request):
 def contato_enviado(request):
     return render(request, 'estoque/contato_enviado.html')
 
-@api_view(['GET'])
-def api_produtos(request):
-    produtos = Produto.objects.all()
-    serializer = ProdutoSerializer(produtos, many=True)
-    return Response(serializer.data)
-
-def api_ruptura(request):
-    LIMITE = 100
-
-    produtos = Produto.objects.filter(estoqueproduto__lt=LIMITE)
-
-    data = [
-        {
-            "idproduto": p.idproduto,
-            "descricao": p.descproduto,
-            "estoque": float(p.estoqueproduto),
-            "unidade": p.unidadedemedida,
-        }
-        for p in produtos
-    ]
-
-    return JsonResponse(data, safe=False)
-
+# 🔹 Enviar mensagem via bot
 def enviar_mensagem(chat_id, texto):
     requests.post(
         TELEGRAM_URL,
-        json={"chat_id": chat_id, "text": texto, "parse_mode": "Markdown"}
+        json={
+            "chat_id": chat_id,
+            "text": texto,
+            "parse_mode": "Markdown"
+        }
     )
 
+
+# 🔹 /start
 def comando_start(chat_id):
-    enviar_mensagem(chat_id, "Olá! 👋\n\nUse:\n/buscar nome → procurar produto\n/estoque id → ver estoque")
+    msg = (
+        "Olá! 👋\n\n"
+        "Use:\n"
+        "/buscar nome → procurar produto\n"
+        "/estoque id → ver estoque"
+    )
+    enviar_mensagem(chat_id, msg)
 
 
+# 🔹 /estoque <id>
 def comando_estoque(chat_id, pid):
     try:
         p = Produto.objects.get(idproduto=pid)
@@ -223,6 +210,7 @@ def comando_estoque(chat_id, pid):
         enviar_mensagem(chat_id, "Produto não encontrado.")
 
 
+# 🔹 /buscar nome
 def comando_buscar(chat_id, termo):
     produtos = Produto.objects.filter(descproduto__icontains=termo)
 
@@ -232,11 +220,13 @@ def comando_buscar(chat_id, termo):
 
     msg = "🔎 *Resultados:*\n\n"
     for p in produtos:
-        msg += f"`{p.idproduto}` – {p.descproduto} ({p.estoqueproduto} {p.unidadedemedida})\n"
+        msg += f"{p.idproduto} – {p.descproduto} ({p.estoqueproduto} {p.unidadedemedida})\n"
 
     msg += "\nUse /estoque ID para ver mais detalhes."
     enviar_mensagem(chat_id, msg)
 
+
+# 🔹 Webhook do Telegram
 @csrf_exempt
 def telegram_webhook(request):
     if request.method != "POST":
